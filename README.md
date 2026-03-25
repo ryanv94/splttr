@@ -2,7 +2,7 @@
 
 **Splttr** is a lightweight, high-performance web application designed for creators who need perfect Instagram carousels and aesthetic white-bordered frames without compromising their privacy.
 
-🚀 **Live Demo:** [https://yourusername.github.io/your-repo-name/](https://yourusername.github.io/your-repo-name/)
+🚀 **Live Demo:** [splttr.cc](https://splttr.cc)
 
 ---
 
