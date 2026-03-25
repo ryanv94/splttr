@@ -270,7 +270,41 @@
             l.href = document.getElementById('borderCanvas').toDataURL('image/jpeg', 0.95);
             l.click();
         }
+        function purgeAllData() {
+            if (!confirm("This will permanently delete all generated previews and reset your workspace. Continue?")) return;
 
+            // 1. Clear in-memory arrays
+            generatedImages = [];
+            currentOriginalFile = null;
+
+            // 2. Clear File Inputs
+            document.getElementById('imageInput').value = "";
+            document.getElementById('borderInput').value = "";
+
+            // 3. Reset UI states
+            document.getElementById('outputArea').classList.add('hidden');
+            document.getElementById('previewGrid').innerHTML = "";
+            document.getElementById('recommendationTag').classList.add('hidden');
+            document.getElementById('carouselTransferBtn').classList.add('hidden');
+            
+            // 4. Reset Border Tool
+            const bCanvas = document.getElementById('borderCanvas');
+            const bPlaceholder = document.getElementById('borderPlaceholder');
+            const bDlBtn = document.getElementById('downloadBorderBtn');
+            
+            bCanvas.getContext('2d').clearRect(0, 0, bCanvas.width, bCanvas.height);
+            bCanvas.classList.add('hidden');
+            bPlaceholder.classList.remove('hidden');
+            bDlBtn.classList.add('hidden');
+
+            // 5. Scroll to top for a fresh start
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            // 6. Refresh Icons
+            lucide.createIcons();
+            
+            console.log("Session data successfully purged.");
+        }
         // --- THEME & HELPERS ---
         function toggleDarkMode() {
             const isDark = document.documentElement.classList.toggle('dark');
