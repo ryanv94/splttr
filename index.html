@@ -107,7 +107,34 @@
                 </div>
             </div>
         </div>
+        <footer class="pt-12 pb-12 border-t border-slate-200 dark:border-slate-800 transition-colors">
+            <div class="flex flex-col items-center text-center space-y-6">
+                <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-4 py-2 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                    Private & Secure Environment
+                </div>
+
+                <div class="max-w-xl space-y-3">
+                    <h3 class="text-sm font-bold text-slate-900 dark:text-slate-100 italic uppercase tracking-tight">Your data never leaves your device.</h3>
+                    <p class="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+                        Splttr is a <strong>client-side only</strong> utility. We do not store, view, or process your images on any server. 
+                        All splitting and bordering happens locally in your browser's RAM. 
+                        Closing this tab or clicking the button below instantly purges all image data from the current session.
+                    </p>
+                </div>
+
+                <button onclick="purgeAllData()" class="group flex items-center gap-2 px-6 py-2 bg-rose-50 dark:bg-rose-900/10 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-800/50 rounded-xl text-xs font-bold hover:bg-rose-600 hover:text-white dark:hover:bg-rose-600 dark:hover:text-white transition-all transform hover:scale-105 active:scale-95 shadow-sm">
+                    <i data-lucide="trash-2" class="w-4 h-4 group-hover:animate-bounce"></i>
+                    RESET & PURGE ALL SESSION DATA
+                </button>
+
+                <div class="text-[10px] text-slate-400 dark:text-slate-600 font-medium">
+                    &copy; 2026 Splttr // No Cookies // No Tracking // No Servers
+                </div>
+            </div>
+        </footer>
     </div>
+   
 
     <script>
         let currentOriginalFile = null;
