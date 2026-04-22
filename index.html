@@ -166,43 +166,79 @@
         }
 
         async function processImage() {
-            if (!currentOriginalFile) return alert("Select an image first.");
-            const tileCount = parseInt(document.getElementById('tileCount').value);
-            const ratio = parseFloat(document.getElementById('aspectRatio').value);
-            const img = new Image(); img.src = URL.createObjectURL(currentOriginalFile);
-            img.onload = () => {
-                const preview = document.getElementById('previewGrid'); preview.innerHTML = ''; generatedImages = [];
-                const tW = img.height / ratio; const totalW = tW * tileCount;
-                let sX = Math.max(0, (img.width - totalW) / 2); let sW = Math.min(img.width, totalW); const slW = sW / tileCount;
-                for (let i = 0; i < tileCount; i++) {
-                    const canvas = document.createElement('canvas'); canvas.width = 1080; canvas.height = 1080 * ratio;
-                    const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
-                    ctx.drawImage(img, sX + (i * slW), 0, slW, img.height, 0, 0, 1080, 1080 * ratio);
-                    const url = canvas.toDataURL('image/jpeg', 0.95); generatedImages.push(url);
-                    const div = document.createElement('div');
-                    div.className = "flex-none w-80 snap-center relative rounded-2xl overflow-hidden shadow-2xl bg-black transition-transform";
-                    div.innerHTML = `
-                        <img src="${url}" class="w-full block" alt="Carousel Slice" />
-                        
-                        <div class="ig-safe-zone">
-                            <div class="ig-safe-zone-top"></div>
-                            <div class="ig-safe-zone-bottom"></div>
-                        </div>
-                        
-                        <div class="absolute bottom-0 inset-x-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/80 to-transparent">
-                            <span class="bg-black/50 backdrop-blur px-2 py-1 rounded text-[9px] font-black text-white uppercase tracking-widest">TILE ${i+1}</span>
-                            
-                            <button onclick="transferTileToBorder('${url}')" class="bg-white/90 backdrop-blur text-black p-2 rounded-full shadow-lg hover:bg-white active:scale-90 transition-all">
-                                <i data-lucide="plus" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    `;
-                    previewGrid.appendChild(div);
-                }
-                document.getElementById('outputArea').classList.remove('hidden');
-                lucide.createIcons(); URL.revokeObjectURL(img.src);
-            };
+    if (!currentOriginalFile) return alert("Select an image first.");
+    const tileCount = parseInt(document.getElementById('tileCount').value);
+    const ratio = parseFloat(document.getElementById('aspectRatio').value);
+    
+    const img = new Image();
+    img.src = URL.createObjectURL(currentOriginalFile);
+    
+    img.onload = () => {
+        const preview = document.getElementById('previewGrid');
+        preview.innerHTML = ''; 
+        generatedImages = [];
+
+        // 1. Calculate Native Dimensions
+        // We want to keep the height as close to the original as possible
+        // but within mobile canvas limits (approx 4096px for safety)
+        const maxCanvasHeight = 4096; 
+        const exportHeight = Math.min(img.height, maxCanvasHeight);
+        const exportWidth = exportHeight / ratio;
+
+        const sourceTileWidth = img.width / tileCount;
+        const sourceTileHeight = img.height;
+
+        // Logic to center-crop if the source isn't exactly the right aspect ratio
+        const targetSourceWidth = img.height / ratio;
+        const totalTargetSourceWidth = targetSourceWidth * tileCount;
+        let sX = Math.max(0, (img.width - totalTargetSourceWidth) / 2);
+        let sW = Math.min(img.width, totalTargetSourceWidth);
+        const sliceWidthSource = sW / tileCount;
+
+        for (let i = 0; i < tileCount; i++) {
+            const canvas = document.createElement('canvas');
+            
+            // 2. Set Canvas to High Resolution (4K-ready)
+            canvas.width = exportWidth; 
+            canvas.height = exportHeight;
+            
+            const ctx = canvas.getContext('2d');
+            
+            // 3. Force High Quality Rendering
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+
+            ctx.drawImage(
+                img, 
+                sX + (i * sliceWidthSource), 0, sliceWidthSource, img.height, // Source
+                0, 0, canvas.width, canvas.height // Destination
+            );
+
+            // 4. Export at Maximum Quality
+            // Using 1.0 (100% quality) and ensuring the type is image/jpeg 
+            // for Instagram compatibility but with zero compression.
+            const url = canvas.toDataURL('image/jpeg', 1.0); 
+            generatedImages.push(url);
+            
+            const div = document.createElement('div');
+            div.className = "flex-none w-80 snap-center relative rounded-2xl overflow-hidden shadow-2xl bg-black group transition-transform";
+            div.innerHTML = `
+                <img src="${url}" class="w-full block" alt="High Res Slice" />
+                <div class="ig-safe-zone"><div class="ig-safe-zone-top"></div><div class="ig-safe-zone-bottom"></div></div>
+                <div class="absolute bottom-0 inset-x-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/80 to-transparent">
+                    <span class="bg-black/50 backdrop-blur px-2 py-1 rounded text-[9px] font-black text-white uppercase tracking-widest">TILE ${i+1}</span>
+                    <button onclick="transferTileToBorder('${url}')" class="bg-white/90 backdrop-blur text-black p-2 rounded-full shadow-lg hover:bg-white active:scale-90 transition-all">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            `;
+            previewGrid.appendChild(div);
         }
+        document.getElementById('outputArea').classList.remove('hidden');
+        lucide.createIcons();
+        URL.revokeObjectURL(img.src);
+    };
+}
 
         // NEW DOWNLOAD LOGIC
         async function downloadAll() {
