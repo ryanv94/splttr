@@ -178,9 +178,25 @@
                     const ctx = canvas.getContext('2d'); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';
                     ctx.drawImage(img, sX + (i * slW), 0, slW, img.height, 0, 0, 1080, 1080 * ratio);
                     const url = canvas.toDataURL('image/jpeg', 0.95); generatedImages.push(url);
-                    const div = document.createElement('div'); div.className = "flex-none w-80 snap-center relative rounded-2xl overflow-hidden shadow-2xl bg-black group transition-transform hover:scale-[1.02]";
-                    div.innerHTML = `<img src="${url}" class="w-full" /><div class="ig-safe-zone"><div class="ig-safe-zone-top"></div><div class="ig-safe-zone-bottom"></div></div><div class="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all"><button onclick="transferTileToBorder('${url}')" class="bg-white text-black px-5 py-2 rounded-full font-black text-[10px] tracking-widest flex items-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i> ADD BORDER</button></div><span class="absolute bottom-3 left-3 bg-black/50 backdrop-blur px-2 py-1 rounded text-[9px] font-black text-white">TILE ${i+1}</span>`;
-                    preview.appendChild(div);
+                    const div = document.createElement('div');
+                    div.className = "flex-none w-80 snap-center relative rounded-2xl overflow-hidden shadow-2xl bg-black transition-transform";
+                    div.innerHTML = `
+                        <img src="${url}" class="w-full block" alt="Carousel Slice" />
+                        
+                        <div class="ig-safe-zone">
+                            <div class="ig-safe-zone-top"></div>
+                            <div class="ig-safe-zone-bottom"></div>
+                        </div>
+                        
+                        <div class="absolute bottom-0 inset-x-0 p-3 flex justify-between items-end bg-gradient-to-t from-black/80 to-transparent">
+                            <span class="bg-black/50 backdrop-blur px-2 py-1 rounded text-[9px] font-black text-white uppercase tracking-widest">TILE ${i+1}</span>
+                            
+                            <button onclick="transferTileToBorder('${url}')" class="bg-white/90 backdrop-blur text-black p-2 rounded-full shadow-lg hover:bg-white active:scale-90 transition-all">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    `;
+                    previewGrid.appendChild(div);
                 }
                 document.getElementById('outputArea').classList.remove('hidden');
                 lucide.createIcons(); URL.revokeObjectURL(img.src);
